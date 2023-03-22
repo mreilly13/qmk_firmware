@@ -1,4 +1,3 @@
-#if defined(RGB_MATRIX_FRAMEBUFFER_EFFECTS) && defined(ENABLE_RGB_MATRIX_BACKLIT_HEATMAP)
 RGB_MATRIX_EFFECT(backlit_heatmap)
 #    ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 #        define RGB_MATRIX_BACKLIT_HEATMAP_DECREASE_DELAY_MS 25
@@ -72,7 +71,7 @@ bool backlit_heatmap(effect_params_t* params) {
                 if (!HAS_ANY_FLAGS(g_led_config.flags[g_led_config.matrix_co[row][col]], params->flags)) continue;
                 HSV hsv = {170 - qsub8(val, 85), rgb_matrix_config.hsv.s, scale8((qadd8(170, val) - 170) * 3, rgb_matrix_config.hsv.v)};
                 RGB rgb = rgb_matrix_hsv_to_rgb(hsv);
-                rgb_matrix_set_color(g_led_config.matrix_co[row][col], max(BL, rgb.r), max(BL, rgb.g), max(BL, rgb.b));
+                rgb_matrix_set_color(g_led_config.matrix_co[row][col], MAX(BL, rgb.r), MAX(BL, rgb.g), MAX(BL, rgb.b));
 
                 if (decrease_heatmap_values) {
                     g_rgb_frame_buffer[row][col] = qsub8(val, 1);
@@ -85,4 +84,3 @@ bool backlit_heatmap(effect_params_t* params) {
 }
 
 #    endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS
-#endif     // defined(RGB_MATRIX_FRAMEBUFFER_EFFECTS) && defined(ENABLE_RGB_MATRIX_BACKLIT_HEATMAP)
