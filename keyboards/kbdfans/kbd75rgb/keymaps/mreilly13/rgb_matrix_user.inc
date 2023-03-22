@@ -1,39 +1,31 @@
 RGB_MATRIX_EFFECT(backlit_heatmap)
-#    ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
-#        define RGB_MATRIX_BACKLIT_HEATMAP_DECREASE_DELAY_MS 25
-#        define RGB_MATRIX_BACKLIT_HEATMAP_SPREAD 40
-#        define RGB_MATRIX_BACKLIT_HEATMAP_AREA_LIMIT 16
-#        define LED_DISTANCE(led_a, led_b) sqrt16(((int16_t)(led_a.x - led_b.x) * (int16_t)(led_a.x - led_b.x)) + ((int16_t)(led_a.y - led_b.y) * (int16_t)(led_a.y - led_b.y)))
-#        define BL 0x0F
+#ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
+
+#define DELAY_MS 25
+#define SPREAD 40
+#define AREA_LIMIT 16
+#define LED_DISTANCE(led_a, led_b) sqrt16(((int16_t)(led_a.x - led_b.x) * (int16_t)(led_a.x - led_b.x)) + ((int16_t)(led_a.y - led_b.y) * (int16_t)(led_a.y - led_b.y)))
+#define BACKLIGHT_LEVEL 0x0F
 
 void process_rgb_matrix_backlit_heatmap(uint8_t row, uint8_t col) {
-#        ifdef RGB_MATRIX_BACKLIT_HEATMAP_SLIM
-    // Limit effect to pressed keys
-    g_rgb_frame_buffer[row][col] = qadd8(g_rgb_frame_buffer[row][col], 32);
-#        else
-    if (g_led_config.matrix_co[row][col] == NO_LED) { // skip as pressed key doesn't have an led position
-        return;
-    }
+    if (g_led_config.matrix_co[row][col] == NO_LED) return; // skip as pressed key doesn't have an led position
     for (uint8_t i_row = 0; i_row < MATRIX_ROWS; i_row++) {
         for (uint8_t i_col = 0; i_col < MATRIX_COLS; i_col++) {
-            if (g_led_config.matrix_co[i_row][i_col] == NO_LED) { // skip as target key doesn't have an led position
-                continue;
-            }
+            if (g_led_config.matrix_co[i_row][i_col] == NO_LED) continue; // skip as target key doesn't have an led position
             if (i_row == row && i_col == col) {
                 g_rgb_frame_buffer[row][col] = qadd8(g_rgb_frame_buffer[row][col], 32);
             } else {
                 uint8_t distance = LED_DISTANCE(g_led_config.point[g_led_config.matrix_co[row][col]], g_led_config.point[g_led_config.matrix_co[i_row][i_col]]);
-                if (distance <= RGB_MATRIX_BACKLIT_HEATMAP_SPREAD) {
-                    uint8_t amount = qsub8(RGB_MATRIX_BACKLIT_HEATMAP_SPREAD, distance);
-                    if (amount > RGB_MATRIX_BACKLIT_HEATMAP_AREA_LIMIT) {
-                        amount = RGB_MATRIX_BACKLIT_HEATMAP_AREA_LIMIT;
+                if (distance <= SPREAD) {
+                    uint8_t amount = qsub8(SPREAD, distance);
+                    if (amount > AREA_LIMIT) {
+                        amount = AREA_LIMIT;
                     }
                     g_rgb_frame_buffer[i_row][i_col] = qadd8(g_rgb_frame_buffer[i_row][i_col], amount);
                 }
             }
         }
     }
-#        endif
 }
 
 // A timer to track the last time we decremented all heatmap values.
@@ -45,7 +37,7 @@ bool backlit_heatmap(effect_params_t* params) {
     RGB_MATRIX_USE_LIMITS(led_min, led_max);
 
     if (params->init) {
-        rgb_matrix_set_color_all(BL, BL, BL);
+        rgb_matrix_set_color_all(BACKLIGHT_LEVEL, BACKLIGHT_LEVEL, BACKLIGHT_LEVEL);
         memset(g_rgb_frame_buffer, 0, sizeof g_rgb_frame_buffer);
     }
 
@@ -53,7 +45,7 @@ bool backlit_heatmap(effect_params_t* params) {
     // `RGB_MATRIX_LED_PROCESS_LIMIT`, therefore we only want to update the
     // timer when the animation starts.
     if (params->iter == 0) {
-        decrease_heatmap_values = timer_elapsed(heatmap_decrease_timer) >= RGB_MATRIX_BACKLIT_HEATMAP_DECREASE_DELAY_MS;
+        decrease_heatmap_values = timer_elapsed(heatmap_decrease_timer) >= DELAY_MS;
 
         // Restart the timer if we are going to decrease the heatmap this frame.
         if (decrease_heatmap_values) {
@@ -71,7 +63,7 @@ bool backlit_heatmap(effect_params_t* params) {
                 if (!HAS_ANY_FLAGS(g_led_config.flags[g_led_config.matrix_co[row][col]], params->flags)) continue;
                 HSV hsv = {170 - qsub8(val, 85), rgb_matrix_config.hsv.s, scale8((qadd8(170, val) - 170) * 3, rgb_matrix_config.hsv.v)};
                 RGB rgb = rgb_matrix_hsv_to_rgb(hsv);
-                rgb_matrix_set_color(g_led_config.matrix_co[row][col], MAX(BL, rgb.r), MAX(BL, rgb.g), MAX(BL, rgb.b));
+                rgb_matrix_set_color(g_led_config.matrix_co[row][col], MAX(BACKLIGHT_LEVEL, rgb.r), MAX(BACKLIGHT_LEVEL, rgb.g), MAX(BACKLIGHT_LEVEL, rgb.b));
 
                 if (decrease_heatmap_values) {
                     g_rgb_frame_buffer[row][col] = qsub8(val, 1);
