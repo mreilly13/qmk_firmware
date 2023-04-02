@@ -46,7 +46,7 @@ static bool jellybean_chevron_run(effect_params_t* params) {
 
 static bool jellybean_chevron(effect_params_t* params) {
     if (params->init) jellybean_chevron_init(params);
-        return jellybean_chevron_run(params);
+    return jellybean_chevron_run(params);
 }
 
 #endif // RGB_MATRIX_CUSTOM_EFFECT_IMPLS

@@ -53,3 +53,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______,  _______,  _______,                                _______,            _______,            _______,  _______,  _______,  _______,  _______
   )
 };
+
+void process_rgb_matrix_typing_heatmap(uint8_t row, uint8_t col); // for modification of built-in implementation
+//void process_keypress(uint8_t row, uint8_t col); // for from-scratch implementation
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (record->event.pressed) {
+    process_rgb_matrix_typing_heatmap(record->event.key.row, record->event.key.col); // for modification of built-in implementation
+    //process_keypress(record->event.key.row, record->event.key.col); // for from-scratch implementation
+  }
+  return true;
+}
