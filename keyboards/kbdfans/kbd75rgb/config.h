@@ -46,6 +46,7 @@
 #define RGBLIGHT_EFFECT_ALTERNATING
 #define RGBLIGHT_EFFECT_TWINKLE
 #define RGB_MATRIX_KEYPRESSES
+#define ENABLE_RGB_MATRIX_SOLID_COLOR
 #define ENABLE_RGB_MATRIX_ALPHAS_MODS
 #define ENABLE_RGB_MATRIX_GRADIENT_LEFT_RIGHT
 #define ENABLE_RGB_MATRIX_BREATHING
@@ -80,4 +81,9 @@
 #define RGB_MATRIX_SPD_STEP 10
 
 #define RGB_DISABLE_WHEN_USB_SUSPENDED // turn off effects when suspended
-#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_backlit_heatmap
+//#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_backlit_heatmap
+#define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR
+
+#define RGB_MATRIX_DEFAULT_HUE 30 // Sets the default hue value, if none has been set
+#define RGB_MATRIX_DEFAULT_SAT 255 // Sets the default saturation value, if none has been set
+#define RGB_MATRIX_DEFAULT_VAL 127 // Sets the default brightness value, if none has been set
