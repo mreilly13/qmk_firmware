@@ -23,7 +23,7 @@ enum keycodes {
   KC_MODE = QK_USER,
 };
 
-const key_override_t mode_key_override = ko_make_basic(MOD_BIT(KC_RGUI), KC_SLEP, KC_MODE);
+const key_override_t mode_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_SLEP, KC_MODE);
 
 // This globally defines all key overrides to be used
 const key_override_t **key_overrides = (const key_override_t *[]){
@@ -95,10 +95,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 layer_state_t layer_state_set_user(layer_state_t state) {
   switch (get_highest_layer(state)) {
     case LAYER:
-      rgb_matrix_sethsv(RGB_MATRIX_DEFAULT_HUE, RGB_MATRIX_DEFAULT_SAT, RGB_MATRIX_DEFAULT_VAL);
+      rgb_matrix_sethsv((4+255)/2, RGB_MATRIX_DEFAULT_SAT, RGB_MATRIX_DEFAULT_VAL);
       break;
     default: //  for any other layers, or the default layer
-      rgb_matrix_sethsv((4+255)/2, RGB_MATRIX_DEFAULT_SAT, RGB_MATRIX_MAXIMUM_BRIGHTNESS);
+      rgb_matrix_sethsv(RGB_MATRIX_DEFAULT_HUE, RGB_MATRIX_DEFAULT_SAT, RGB_MATRIX_MAXIMUM_BRIGHTNESS);
       break;
     }
   return state;
