@@ -56,6 +56,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )*/
 };
 
+void keyboard_post_init_user(void) {
+    layer_move(BASE);
+}
+
 void process_rgb_matrix_typing_heatmap(uint8_t row, uint8_t col); // for modification of built-in implementation
 //void process_keypress(uint8_t row, uint8_t col); // for from-scratch implementation
 
