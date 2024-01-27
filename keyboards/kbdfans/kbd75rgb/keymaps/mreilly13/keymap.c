@@ -18,6 +18,12 @@
 
 #define BASE 0
 #define LAYER 1
+#define SLEEP_TIME 1000
+#define SLP_KC 0x0002
+
+enum keycodes_user {
+  MD_SLP = SLP_KC
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -27,7 +33,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,  KC_END,
     KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,   KC_PGUP,
     KC_LSFT,  KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RSFT,            KC_UP,    KC_PGDN,
-    KC_LCTL,  KC_DEL,   KC_LALT,                                KC_SPC,             KC_SLEP,            KC_RGUI,  KC_APP,  KC_LEFT,  KC_DOWN,  KC_RGHT
+    KC_LCTL,  KC_DEL,   KC_LALT,                                KC_SPC,             LT(0, MD_SLP),      KC_RGUI,  KC_APP,  KC_LEFT,  KC_DOWN,  KC_RGHT
   ),
 
   [1] = LAYOUT_75_ansi(
@@ -57,21 +63,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void keyboard_post_init_user(void) {
-    layer_move(BASE);
+  layer_move(BASE);
 }
 
 void process_rgb_matrix_typing_heatmap(uint8_t row, uint8_t col); // for modification of built-in implementation
 //void process_keypress(uint8_t row, uint8_t col); // for from-scratch implementation
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed) {
-    if (keycode == KC_SLEP && (get_mods() & MOD_MASK_SHIFT) != 0) {
-      layer_move(get_highest_layer(layer_state) == BASE ? LAYER : BASE);
+  switch (keycode) {
+    case LT(0, MD_SLP):
+      if (record->event.pressed) {
+        if ((get_mods() & MOD_MASK_SHIFT) != 0) {
+          layer_move(get_highest_layer(layer_state) == BASE ? LAYER : BASE);
+        } else if (!record->tap.count) {
+          tap_code(KC_SLEP);
+        }
       return false;
-    }
-    process_rgb_matrix_typing_heatmap(record->event.key.row, record->event.key.col); // for modification of built-in implementation
-    //process_keypress(record->event.key.row, record->event.key.col); // for from-scratch implementation
+      }
   }
+  process_rgb_matrix_typing_heatmap(record->event.key.row, record->event.key.col); // for modification of built-in implementation
+  // process_keypress(record->event.key.row, record->event.key.col); // for from-scratch implementation
   return true;
 }
 
